@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "cloudinary",
     "cloudinary_storage",
-    "django_celery_results",
     "django_celery_beat",
     # django apps
     "users",

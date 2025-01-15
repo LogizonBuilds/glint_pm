@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-from devs.models import ErrorLog
 import traceback
 
 load_dotenv()
@@ -40,11 +39,5 @@ def upload_to_cloudinary(file, folder=None):
         response = cloudinary.uploader.upload(file, folder=folder, resource_type="auto")
         return response.get("secure_url")
     except Exception as e:
-        stack_trace = traceback.format_exc()
-        ErrorLog.objects.create(
-            error=str(e),
-            traceback=stack_trace,
-            app_name="upload_cloudinary_util",
-            severity="ERROR",
-        )
+        traceback.print_exc()
         raise Exception(f"Cloudinary upload failed: {str(e)}")
