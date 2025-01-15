@@ -14,6 +14,9 @@ from pathlib import Path
 import logging
 from datetime import timedelta
 import os
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 
 from sparky_utils.logger import LoggerConfig
@@ -49,6 +52,10 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework.authtoken",
     "phonenumber_field",
+    "cloudinary",
+    "cloudinary_storage",
+    "django_celery_results",
+    "django_celery_beat",
     # django apps
     "users",
     "devs",
@@ -109,6 +116,7 @@ EMAIL_USE_SSL = True
 EMAIL_HOST_USER = "rifbackend001@gmail.com"
 EMAIL_HOST_PASSWORD = "gtgt pbqu yljb evoz"
 
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -163,6 +171,35 @@ TIME_ZONE = "Africa/Lagos"
 USE_I18N = True
 
 USE_TZ = False
+
+
+# CELERY
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/2"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_RESULTS_EXTENDED = True
+
+
+CELERY_BEAT_SCHEDULE = {}
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": get_env("CLOUDINARY_CLOUD_NAME", "your-cloud-name"),
+    "API_KEY": get_env("CLOUDINARY_API_KEY", "your-api-key"),
+    "API_SECRET": get_env("CLOUDINARY_API_SECRET", "your"),
+}
+
+cloudinary.config(
+    cloud_name=get_env("CLOUDINARY_CLOUD_NAME", "your-cloud-name"),
+    api_key=get_env("CLOUDINARY_API_KEY", "your-api-key"),
+    api_secret=get_env("CLOUDINARY_API_SECRET", "your"),
+    secure=True,
+)
+
+# Set Cloudinary as the default storage for media files
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 
 # Static files (CSS, JavaScript, Images)
