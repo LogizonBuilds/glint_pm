@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     # django apps
     "users",
+    "devs",
 ]
 
 MIDDLEWARE = [

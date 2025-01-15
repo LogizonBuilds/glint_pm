@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 import logging
 import traceback
 from django.db import transaction
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 logger = logging.getLogger(__name__)
@@ -59,6 +60,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     profile_pic = models.URLField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
+    whatsapp_number = PhoneNumberField(blank=True, null=True)
 
     objects = CustomUserManager()
 
