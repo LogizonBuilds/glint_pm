@@ -5,6 +5,8 @@ from django.core.mail import EmailMessage, send_mail
 from django.template import Context
 from django.template.loader import get_template, render_to_string
 from devs.models import ErrorLog
+import random
+import string
 
 logger = logging.getLogger(__name__)
 
@@ -72,3 +74,17 @@ def sendmail(
         logger.error(f"Error sending email to {user_email} due to {e}")
         traceback.print_exc()
         pass
+
+
+def generate_otp() -> str:
+    """Generates an otp for email verification"""
+    uid = uuid.uuid4()
+    uuid_hex = uid.hex  # convert to hex value
+    otp = "".join(filter(str.isdigit, uuid_hex))[:6]
+    return otp
+
+
+def generate_ref() -> str:
+    """generate unique reference code"""
+    code = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
+    return code.upper()
