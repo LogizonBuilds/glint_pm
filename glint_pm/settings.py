@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "cloudinary",
     "cloudinary_storage",
     "django_celery_beat",
+    "django_celery_results",
     # django apps
     "users",
     "devs",
