@@ -61,6 +61,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     profile_pic = models.URLField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     whatsapp_number = PhoneNumberField(blank=True, null=True)
+    email_verified = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
