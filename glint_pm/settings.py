@@ -113,8 +113,8 @@ EMAIL_HOST = "smtp.gmail.com"
 # EMAIL_USE_TLS = True
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-EMAIL_HOST_USER = "rifbackend001@gmail.com"
-EMAIL_HOST_PASSWORD = "gtgt pbqu yljb evoz"
+EMAIL_HOST_USER = "sainthaywon80@gmail.com"
+EMAIL_HOST_PASSWORD = "kkwu haty exrj inss"
 
 
 # Password validation

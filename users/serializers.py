@@ -56,9 +56,14 @@ class UserSignupSerializer(ModelSerializer):
         password1 = data.get("password1")
         password2 = data.get("password2")
         if password1 != password2:
-            raise ServiceException("The two passwords do not match")
+            raise ServiceException(
+                message="The two passwords do not match", status_code=400
+            )
         if User.objects.filter(email__iexact=email):
-            raise ServiceException("A client with this email already exists")
+            raise ServiceException(
+                message="A client with this email already exists", status_code=409
+            )
+        return data
 
     def create(self, validated_data):
         password = validated_data.pop("password1")
