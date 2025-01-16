@@ -8,6 +8,8 @@ from django.core.cache import cache
 from utils.utils import generate_otp
 from .models import User
 from .tasks import send_email_verification_task
+from rest_framework_simplejwt.tokens import RefreshToken
+from datetime import datetime
 
 # Create your views here.
 
@@ -114,4 +116,33 @@ class VerifyOTP(APIView):
         user.save()
         return service_response(
             status="success", message="Email Successfully Verified!", status_code=200
+        )
+
+
+class SocialAuth(APIView):
+    """Social Auth View"""
+
+    @exception_advice(model_object=ErrorLog)
+    def post(self, request, *args, **kwargs):
+        """
+        Post Handler to handle social auth login and register
+        """
+        data = request.data
+        user, created = User.objects.get_or_create(**data)
+        tokens = RefreshToken.for_user(user)
+        access_token = str(tokens.access_token)
+        refresh_token = str(tokens)
+        token_data = {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "expires_in": tokens.access_token.lifetime.total_seconds(),
+        }
+        user.last_login = datetime.now()
+        user.email_verified = True
+        user.save()
+        return service_response(
+            status="success",
+            message="Login Successful",
+            data=token_data,
+            status_code=200,
         )
