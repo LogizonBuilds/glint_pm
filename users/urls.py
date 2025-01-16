@@ -5,6 +5,7 @@ from .views import (
     VerifyOTP,
     SocialAuth,
     UserDetailsAPIView,
+    PasswordResetView,
 )
 
 
@@ -14,4 +15,5 @@ urlpatterns = [
     path("verify-otp", VerifyOTP.as_view(), name="verify-otp"),
     path("social-login", SocialAuth.as_view(), name="social-login"),
     path("details", UserDetailsAPIView.as_view(), name="user-details"),
+    path("reset-password", PasswordResetView.as_view(), name="reset-password"),
 ]

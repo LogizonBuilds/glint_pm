@@ -180,8 +180,8 @@ class PasswordResetView(APIView):
     """Sends Reset password token to a user"""
 
     @exception_advice(model_object=ErrorLog)
-    def post(self, request, *args, **kwargs):
-        email: Union[str, None] = request.data.get("email")
+    def get(self, request, *args, **kwargs):
+        email: Union[str, None] = request.GET.get("email")
         if not email:
             return service_response(
                 status="error", message="Email is required", status_code=400
