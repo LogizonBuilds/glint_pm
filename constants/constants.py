@@ -12,3 +12,8 @@ class Severity(EnumBase):
     INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
+
+
+class ServiceType(EnumBase):
+    TECH = "TECH"
+    PROJECT_MANAGEMENT = "PROJECT_MANAGEMENT"
