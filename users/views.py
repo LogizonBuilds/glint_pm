@@ -7,6 +7,7 @@ from .serializers import (
     VerifyOTPSerializer,
     UserDetailsSerializers,
     ChangePasswordUnAuthenticatedSerializer,
+    LoginSerializer,
 )
 from devs.models import ErrorLog
 from django.core.cache import cache
@@ -229,4 +230,33 @@ class ChangePasswordAPIView(APIView):
         user.save()
         return service_response(
             status="success", message="Password Changed Successfully", status_code=200
+        )
+
+
+class LoginAPIView(APIView):
+    """Logs client in"""
+
+    @exception_advice(model_object=ErrorLog)
+    def post(self, request, *args, **kwargs):
+        """Post Handler to handle login"""
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data.get("user")
+        tokens = RefreshToken.for_user(user)
+        access_token = str(tokens.access_token)
+        refresh_token = str(tokens)
+
+        token_data = {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "expires_in": tokens.access_token.lifetime.total_seconds(),
+        }
+        user.last_login = datetime.now()
+        user.save()
+
+        return service_response(
+            status="success",
+            message="Login Successful",
+            data=token_data,
+            status_code=200,
         )

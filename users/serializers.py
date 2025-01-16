@@ -141,3 +141,24 @@ class ChangePasswordUnAuthenticatedSerializer(serializers.Serializer):
         if not User.objects.filter(email__iexact=email).exists():
             raise ServiceException(message="User does not exist", status_code=404)
         return data
+
+
+class LoginSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ("email", "password")
+
+    def validate(self, data):
+        email = data.get("email")
+        password = data.get("password")
+
+        # get user
+        user = User.objects.filter(email__iexact=email).first()
+        if user and user.check_password(password):
+            data["user"] = user
+            return data
+        else:
+            raise ServiceException(message="Invalid credentials", status_code=401)
