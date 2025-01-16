@@ -13,9 +13,14 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import logging
 from datetime import timedelta
+import os
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 
 from sparky_utils.logger import LoggerConfig
+from utils.utils import get_env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-5%ba635)0#p(aopnlumqsvipe5%kg6*j_^@5$(c(*!&cha27yz"
+SECRET_KEY = get_env("SECRET_KEY", "django-insecure-#&")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -45,6 +50,16 @@ INSTALLED_APPS = [
     # third party libraries
     "rest_framework",
     "corsheaders",
+    "rest_framework.authtoken",
+    "phonenumber_field",
+    "cloudinary",
+    "cloudinary_storage",
+    "django_celery_beat",
+    "django_celery_results",
+    # django apps
+    "users",
+    "devs",
+    "services",
 ]
 
 MIDDLEWARE = [
@@ -55,6 +70,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "glint_pm.urls"
@@ -62,7 +78,7 @@ ROOT_URLCONF = "glint_pm.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -76,17 +92,30 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "glint_pm.wsgi.application"
-
+AUTH_USER_MODEL = "users.User"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": get_env("DATABASE_NAME", "glint_db"),
+        "USER": get_env("DATABASE_USER", "user"),
+        "PASSWORD": get_env("DATABASE_PASSWORD", "password"),
+        "HOST": get_env("DATABASE_HOST", "localhost"),
+        "PORT": "5432",
     }
 }
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = "sainthaywon80@gmail.com"
+EMAIL_HOST_PASSWORD = "kkwu haty exrj inss"
 
 
 # Password validation
@@ -129,9 +158,10 @@ CORS_ALLOW_ALL_ORIGINS = True
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1440),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=2),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
+    "ALGORITHM": "HS256",
 }
 
 
@@ -144,6 +174,35 @@ USE_I18N = True
 USE_TZ = False
 
 
+# CELERY
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/2"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_RESULTS_EXTENDED = True
+
+
+CELERY_BEAT_SCHEDULE = {}
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": get_env("CLOUDINARY_CLOUD_NAME", "your-cloud-name"),
+    "API_KEY": get_env("CLOUDINARY_API_KEY", "your-api-key"),
+    "API_SECRET": get_env("CLOUDINARY_API_SECRET", "your"),
+}
+
+cloudinary.config(
+    cloud_name=get_env("CLOUDINARY_CLOUD_NAME", "your-cloud-name"),
+    api_key=get_env("CLOUDINARY_API_KEY", "your-api-key"),
+    api_secret=get_env("CLOUDINARY_API_SECRET", "your"),
+    secure=True,
+)
+
+# Set Cloudinary as the default storage for media files
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -152,6 +211,16 @@ STATIC_ROOT = BASE_DIR / "static"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
