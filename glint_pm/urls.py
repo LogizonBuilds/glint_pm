@@ -23,4 +23,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", RootAPIView.as_view(), name="root"),
     path("auth/", include("users.urls")),
+    path("services/", include("services.urls")),
 ]
