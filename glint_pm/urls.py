@@ -24,4 +24,5 @@ urlpatterns = [
     path("", RootAPIView.as_view(), name="root"),
     path("auth/", include("users.urls")),
     path("services/", include("services.urls")),
+    path("testimonies/", include("testimonies.urls")),
 ]
