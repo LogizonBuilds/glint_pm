@@ -76,3 +76,24 @@ class UserSignupSerializer(ModelSerializer):
 class VerifyOTPSerializer(serializers.Serializer):
     otp = serializers.CharField(required=True)
     email = serializers.EmailField(required=True)
+
+
+class UserDetailsSerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "first_name",
+            "email",
+            "last_name",
+            "whatsapp_number",
+            "date_joined",
+            "is_active",
+        )
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        full_name = instance.full_name
+        data["full_name"] = full_name
+        return data

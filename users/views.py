@@ -2,7 +2,11 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from sparky_utils.response import service_response
 from sparky_utils.advice import exception_advice
-from .serializers import UserSignupSerializer, VerifyOTPSerializer
+from .serializers import (
+    UserSignupSerializer,
+    VerifyOTPSerializer,
+    UserDetailsSerializers,
+)
 from devs.models import ErrorLog
 from django.core.cache import cache
 from utils.utils import generate_otp
@@ -10,6 +14,7 @@ from .models import User
 from .tasks import send_email_verification_task
 from rest_framework_simplejwt.tokens import RefreshToken
 from datetime import datetime
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
@@ -144,5 +149,25 @@ class SocialAuth(APIView):
             status="success",
             message="Login Successful",
             data=token_data,
+            status_code=200,
+        )
+
+
+class UserDetailsAPIView(APIView):
+    """Get User's details"""
+
+    permission_classes = [IsAuthenticated]
+
+    @exception_advice(model_object=ErrorLog)
+    def get(self, request, *args, **kwargs):
+        """HTTP Get handler that returns users details"""
+        user = request.user
+        # serialize the user instance
+        serializer = UserDetailsSerializers(instance=user)
+        data = serializer.data
+        return service_response(
+            status="success",
+            message="User details successfully fetched!",
+            data=data,
             status_code=200,
         )
