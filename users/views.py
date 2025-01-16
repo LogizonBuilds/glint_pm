@@ -59,3 +59,26 @@ class SignupUserAPIView(APIView):
                 status_code=201,
             )
         raise Exception
+
+
+class ResendOTPAPIView(APIView):
+    """Resends OTP"""
+
+    @exception_advice(model_object=ErrorLog)
+    def post(self, request, *args, **kwargs):
+        """Post Handler to resend otp"""
+        email: str = request.data.get("email")
+        user: User = User.objects.get(email__iexact=email)
+        first_name = user.first_name
+        otp: str = generate_otp()
+        # cache the otp
+        cache.set(email, otp, 60 * 15)
+        subject = "Email Verification"
+        message = f"""
+        Your OTP code is {otp},
+        Expires in 15mins
+        """
+        send_email_verification_task.delay(subject, message, first_name, email)
+        return service_response(
+            status="success", message="OTP Resent Successfully", status_code=200
+        )
