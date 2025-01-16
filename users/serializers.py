@@ -71,3 +71,8 @@ class UserSignupSerializer(ModelSerializer):
         validated_data["password"] = password
         user = User.objects.create(**validated_data)
         return user
+
+
+class VerifyOTPSerializer(serializers.Serializer):
+    otp = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)

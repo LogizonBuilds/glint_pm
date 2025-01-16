@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from sparky_utils.response import service_response
 from sparky_utils.advice import exception_advice
-from .serializers import UserSignupSerializer
+from .serializers import UserSignupSerializer, VerifyOTPSerializer
 from devs.models import ErrorLog
 from django.core.cache import cache
 from utils.utils import generate_otp
@@ -81,4 +81,37 @@ class ResendOTPAPIView(APIView):
         send_email_verification_task.delay(subject, message, first_name, email)
         return service_response(
             status="success", message="OTP Resent Successfully", status_code=200
+        )
+
+
+class VerifyOTP(APIView):
+    """Verify the otp sent to the user email"""
+
+    serializer_class: VerifyOTPSerializer = VerifyOTPSerializer
+
+    @exception_advice(model_object=ErrorLog)
+    def post(self, request, *args, **kwargs):
+        """Post Handler to handle verifing user email"""
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email: str = serializer.validated_data.get("email")
+        otp: str = serializer.validated_data.get("otp")
+        # get otp from cache
+        cached_otp: str = cache.get(email)
+        print("This is the cached code: ", cached_otp)
+        if not cached_otp:
+            return service_response(
+                status="error", message="OTP Expired!", status_code=400
+            )
+        if str(otp) != str(cached_otp):
+            return service_response(
+                status="error", message="Invalid OTP!", status_code=400
+            )
+
+        # get the user
+        user: User = User.objects.get(email__iexact=email)
+        user.email_verified = True
+        user.save()
+        return service_response(
+            status="success", message="Email Successfully Verified!", status_code=200
         )
