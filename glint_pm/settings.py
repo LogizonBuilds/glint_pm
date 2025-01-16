@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "users",
     "devs",
     "services",
+    "testimonies",
 ]
 
 MIDDLEWARE = [
