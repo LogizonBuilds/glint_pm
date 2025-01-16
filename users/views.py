@@ -6,6 +6,7 @@ from .serializers import (
     UserSignupSerializer,
     VerifyOTPSerializer,
     UserDetailsSerializers,
+    ChangePasswordUnAuthenticatedSerializer,
 )
 from devs.models import ErrorLog
 from django.core.cache import cache
@@ -15,6 +16,7 @@ from .tasks import send_email_verification_task
 from rest_framework_simplejwt.tokens import RefreshToken
 from datetime import datetime
 from rest_framework.permissions import IsAuthenticated
+from typing import Union
 
 # Create your views here.
 
@@ -85,6 +87,7 @@ class ResendOTPAPIView(APIView):
         Your OTP code is {otp},
         Expires in 15mins
         """
+        # TODO Update the send_email_verification_task to accept dynamic template name
         send_email_verification_task.delay(subject, message, first_name, email)
         return service_response(
             status="success", message="OTP Resent Successfully", status_code=200
@@ -170,4 +173,60 @@ class UserDetailsAPIView(APIView):
             message="User details successfully fetched!",
             data=data,
             status_code=200,
+        )
+
+
+class PasswordResetView(APIView):
+    """Sends Reset password token to a user"""
+
+    @exception_advice(model_object=ErrorLog)
+    def post(self, request, *args, **kwargs):
+        email: Union[str, None] = request.data.get("email")
+        if not email:
+            return service_response(
+                status="error", message="Email is required", status_code=400
+            )
+
+        user: User = User.objects.get(email__iexact=email)
+        otp: str = generate_otp()
+        # cache otp
+        cache.set(email, otp, 60 * 15)
+        first_name = user.first_name
+        subject = "Password Reset Token"
+        message = f"""
+        Your Password reset token is {otp}
+        """
+        send_email_verification_task.delay(subject, message, first_name, email)
+        return service_response(
+            status="success", message="OTP sent successfully", status_code=200
+        )
+
+
+class ChangePasswordAPIView(APIView):
+    """Changes User password with reset token"""
+
+    @exception_advice(model_object=ErrorLog)
+    def post(self, request, *args, **kwargs):
+        """Post Handler that handles changing of password - Unauthenticated"""
+
+        serializer = ChangePasswordUnAuthenticatedSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data.get("email")
+        otp = serializer.validated_data.get("otp")
+        password = serializer.validated_data.get("password1")
+        # get opt from cache
+        cached_otp = cache.get(email)
+        if not cached_otp:
+            return service_response(
+                status="error", message="OTP Expired", status_code=400
+            )
+        if str(cached_otp) != str(otp):
+            return service_response(
+                status="error", message="Invalid OTP", status_code=400
+            )
+        user = User.objects.get(email__iexact=email)
+        user.set_password(password)
+        user.save()
+        return service_response(
+            status="success", message="Password Changed Successfully", status_code=200
         )

@@ -97,3 +97,47 @@ class UserDetailsSerializers(serializers.ModelSerializer):
         full_name = instance.full_name
         data["full_name"] = full_name
         return data
+
+
+class ChangePasswordUnAuthenticatedSerializer(serializers.Serializer):
+    password1 = serializers.CharField(required=True)
+    password2 = serializers.CharField(required=True)
+    otp = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
+
+    def validate_password1(self, password1):
+        """Validate user's inputed password on signup
+
+        Args:
+            password1 (str): user's password
+
+        Raises:
+            serializers.ValidationError: raise password requirements
+
+        Returns:
+            str: returns the validated password
+        """
+        # Regex pattern to match at least one digit, one uppercase letter,
+        # one lowercase letter, one special character, and length >= 8
+        regex_pattern = (
+            r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+        )
+        if not re.match(regex_pattern, password1):
+            raise serializers.ValidationError(
+                "Password must contain at least one digit, "
+                "one uppercase letter, one lowercase letter, "
+                "one special character, and length >= 8"
+            )
+        return password1
+
+    def validate(self, data):
+        password1 = data.get("password1")
+        email = data.get("email")
+        password2 = data.get("password2")
+
+        if str(password1) != str(password2):
+            raise ServiceException(message="Password Do not match", status_code=400)
+        # check id user exist
+        if not User.objects.filter(email__iexact=email).exists():
+            raise ServiceException(message="User does not exist", status_code=404)
+        return data
