@@ -74,17 +74,3 @@ def sendmail(
         logger.error(f"Error sending email to {user_email} due to {e}")
         traceback.print_exc()
         pass
-
-
-def generate_otp() -> str:
-    """Generates an otp for email verification"""
-    uid = uuid.uuid4()
-    uuid_hex = uid.hex  # convert to hex value
-    otp = "".join(filter(str.isdigit, uuid_hex))[:6]
-    return otp
-
-
-def generate_ref() -> str:
-    """generate unique reference code"""
-    code = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
-    return code.upper()

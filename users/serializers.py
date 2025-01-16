@@ -11,6 +11,9 @@ class UserSignupSerializer(ModelSerializer):
     email = serializers.EmailField(required=True)
     password1 = serializers.CharField(write_only=True, required=True, min_length=8)
     password2 = serializers.CharField(write_only=True, required=True, min_length=8)
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    whatsapp_number = serializers.CharField(required=True)
 
     class Meta:
         model = User
@@ -19,6 +22,8 @@ class UserSignupSerializer(ModelSerializer):
             "first_name",
             "last_name",
             "whatsapp_number",
+            "password1",
+            "password2",
         )
 
     def validate_password1(self, password1):
@@ -60,3 +65,4 @@ class UserSignupSerializer(ModelSerializer):
         validated_data.pop("password2")
         validated_data["password"] = password
         user = User.objects.create(**validated_data)
+        return user

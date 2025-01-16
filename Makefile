@@ -22,3 +22,6 @@ dbshell:
 
 test:
 	@pytest
+
+celery-default:
+	@celery -A glint_pm.celery worker --loglevel=INFO --concurrency 1 -P solo

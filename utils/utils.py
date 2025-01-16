@@ -1,6 +1,10 @@
 import os
 from dotenv import load_dotenv
 import traceback
+import cloudinary.uploader
+import uuid
+import random
+import string
 
 load_dotenv()
 
@@ -16,9 +20,6 @@ def get_env(key: str, fallback: str) -> str:
         str: value of environment variable
     """
     return os.getenv(key, fallback)
-
-
-import cloudinary.uploader
 
 
 def upload_to_cloudinary(file, folder=None):
@@ -41,3 +42,17 @@ def upload_to_cloudinary(file, folder=None):
     except Exception as e:
         traceback.print_exc()
         raise Exception(f"Cloudinary upload failed: {str(e)}")
+
+
+def generate_otp() -> str:
+    """Generates an otp for email verification"""
+    uid = uuid.uuid4()
+    uuid_hex = uid.hex  # convert to hex value
+    otp = "".join(filter(str.isdigit, uuid_hex))[:6]
+    return otp
+
+
+def generate_ref() -> str:
+    """generate unique reference code"""
+    code = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
+    return code.upper()
