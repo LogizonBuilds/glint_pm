@@ -11,7 +11,7 @@ from .serializers import (
 )
 from devs.models import ErrorLog
 from django.core.cache import cache
-from utils.utils import generate_otp
+from utils.utils import generate_otp, upload_to_cloudinary
 from .models import User
 from .tasks import send_email_verification_task
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -260,3 +260,28 @@ class LoginAPIView(APIView):
             data=token_data,
             status_code=200,
         )
+
+
+class UploadProfileImageAPIView(APIView):
+    """API View that handles client profile image upload
+    """
+    permission_classes = [IsAuthenticated]
+    
+    @exception_advice(model_object=ErrorLog)
+    def post(self, request, *args, **kwargs):
+        """Post handler
+        """
+        profile_image = request.FILES.get("profile_image")
+        profile_url = upload_to_cloudinary(profile_image, "profile_pics")
+        user = request.user
+        # set user profile image
+        user.profile_pic = profile_url
+        user.save()
+        
+        data = {
+            "profile_pic": profile_url
+        }
+        return service_response(status="success", message="Image Uploaded Successfully", data=data, status_code=200)
+                
+        
+    
