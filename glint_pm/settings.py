@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "devs",
     "services",
     "testimonies",
+    "portfolio",
 ]
 
 MIDDLEWARE = [
