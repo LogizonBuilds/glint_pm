@@ -162,3 +162,9 @@ class LoginSerializer(serializers.ModelSerializer):
             return data
         else:
             raise ServiceException(message="Invalid credentials", status_code=401)
+
+
+class UpdateUserSerializer(serializers.Serializer):
+    last_name = serializers.CharField(required=False)
+    first_name = serializers.CharField(required=False)
+    whatsapp_number = serializers.CharField(required=False)

@@ -17,12 +17,17 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from users.views import RootAPIView, UploadProfileImageAPIView
+from users.views import RootAPIView, UploadProfileImageAPIView, UpdateClientProfile
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", RootAPIView.as_view(), name="root"),
-    path("users/profile/upload", UploadProfileImageAPIView.as_view(), name="upload-profile-pic"),
+    path(
+        "users/profile/upload",
+        UploadProfileImageAPIView.as_view(),
+        name="upload-profile-pic",
+    ),
+    path("users/profile/update", UpdateClientProfile.as_view(), name="update-profile"),
     path("auth/", include("users.urls")),
     path("services/", include("services.urls")),
     path("testimonies/", include("testimonies.urls")),
