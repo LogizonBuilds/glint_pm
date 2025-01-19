@@ -56,12 +56,17 @@ INSTALLED_APPS = [
     "cloudinary_storage",
     "django_celery_beat",
     "django_celery_results",
+    "ckeditor",
+    "ckeditor_uploader",
+    'django_editorjs',
+    'django_editorjs_fields',
     # django apps
     "users",
     "devs",
     "services",
     "testimonies",
     "portfolio",
+    "blogs",
 ]
 
 MIDDLEWARE = [
@@ -204,6 +209,20 @@ cloudinary.config(
 # Set Cloudinary as the default storage for media files
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+CKEDITOR_CONFIGS = {
+    "default": {
+        "toolbar": "full",
+        "height": 400,
+        "width": "100%",
+        "extraPlugins": ",".join(
+            [
+                "codesnippet",  # Optional: Enable code snippets
+            ]
+        ),
+    },
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
