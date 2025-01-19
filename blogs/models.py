@@ -14,7 +14,6 @@ class Post(models.Model):
     date_created = models.DateField(default=timezone.now)
     author_name = models.CharField(max_length=200, null=True, blank=True)
     image = CloudinaryField("image")
-    content = EditorJsJSONField(null=True, blank=True)
 
     def __str__(self) -> str:
         return f"{self.title}"
