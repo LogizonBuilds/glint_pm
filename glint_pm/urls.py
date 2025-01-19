@@ -36,6 +36,7 @@ urlpatterns = [
     path("testimonies/", include("testimonies.urls")),
     path("editorjs/", include(editorjs_urls)),
     path("portfolio/", include("portfolio.urls")),
+    path("blogs/", include("blogs.urls")),
 ]
 
 

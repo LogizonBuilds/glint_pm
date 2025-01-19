@@ -1,4 +1,5 @@
 amqp==5.3.1
+anyio==4.8.0
 asgiref==3.8.1
 billiard==4.2.1
 celery==5.4.0
@@ -13,17 +14,26 @@ cron-descriptor==1.4.5
 Django==5.1.2
 django-celery-beat==2.7.0
 django-celery-results==2.5.1
+django-ckeditor==6.7.2
+django-ckeditor-5==0.2.15
 django-cloudinary-storage==0.3.0
 django-cors-headers==4.6.0
+django-editorjs==0.2.1
+django-editorjs-fields==0.2.7
+django-js-asset==3.0.1
 django-phonenumber-field==8.0.0
 django-redis==5.4.0
 django-timezone-field==7.1
 djangorestframework==3.15.2
 djangorestframework-simplejwt==5.3.1
--e git+https://github.com/LogizonBuilds/glint_pm.git@b9a028273d224ffe804861298b320f28e1a9394a#egg=glint_pm
+-e git+https://github.com/LogizonBuilds/glint_pm.git@34d7a6e863c0033074ec634a2e20a5172af4d0e8#egg=glint_pm
+h11==0.14.0
+httpcore==1.0.7
+httpx==0.28.1
 idna==3.10
 kombu==5.4.2
 phonenumbers==8.13.35
+pillow==11.1.0
 prompt_toolkit==3.0.48
 psycopg2-binary==2.9.10
 PyJWT==2.10.1
@@ -33,8 +43,10 @@ python-dotenv==1.0.1
 redis==5.2.1
 requests==2.32.2
 six==1.17.0
-sparky_utils==1.1.7
+sniffio==1.3.1
+sparky_utils==1.1.8
 sqlparse==0.5.1
+typing_extensions==4.12.2
 tzdata==2024.2
 urllib3==2.3.0
 vine==5.1.0
