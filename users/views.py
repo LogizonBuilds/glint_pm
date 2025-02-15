@@ -142,10 +142,16 @@ class SocialAuth(APIView):
         tokens = RefreshToken.for_user(user)
         access_token = str(tokens.access_token)
         refresh_token = str(tokens)
+        user_data = {
+            "name": user.first_name,
+            "email": user.email,
+            "profile_pic": user.profile_pic,
+        }
         token_data = {
             "access_token": access_token,
             "refresh_token": refresh_token,
             "expires_in": tokens.access_token.lifetime.total_seconds(),
+            "user": user_data,
         }
         user.last_login = datetime.now()
         user.email_verified = True
@@ -246,11 +252,17 @@ class LoginAPIView(APIView):
         tokens = RefreshToken.for_user(user)
         access_token = str(tokens.access_token)
         refresh_token = str(tokens)
+        user_data = {
+            "name": user.first_name,
+            "email": user.email,
+            "profile_pic": user.profile_pic,
+        }
 
         token_data = {
             "access_token": access_token,
             "refresh_token": refresh_token,
             "expires_in": tokens.access_token.lifetime.total_seconds(),
+            "user": user_data,
         }
         user.last_login = datetime.now()
         user.save()

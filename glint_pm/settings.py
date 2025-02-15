@@ -58,8 +58,8 @@ INSTALLED_APPS = [
     "django_celery_results",
     "ckeditor",
     "ckeditor_uploader",
-    'django_editorjs',
-    'django_editorjs_fields',
+    "django_editorjs",
+    "django_editorjs_fields",
     # django apps
     "users",
     "devs",
