@@ -40,7 +40,7 @@ class AllWhatWeDoAPIView(APIView):
         """Get handler to handle getting all available services"""
         # get all What we do
         wedos = WhatWeDo.objects.all().order_by("created_at")[:3]
-        # serialize the services
+        # serialize the wedos
         serializer = WhatWeDoSerializer(instance=wedos, many=True)
         data = serializer.data
         return service_response(

@@ -90,6 +90,7 @@ class UserDetailsSerializers(serializers.ModelSerializer):
             "whatsapp_number",
             "date_joined",
             "is_active",
+            "residential_address",
         )
 
     def to_representation(self, instance):
