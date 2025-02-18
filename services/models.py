@@ -19,3 +19,12 @@ class Service(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
+
+
+@str_meta
+class WhatWeDo(models.Model):
+    title = models.CharField(max_length=300)
+    description = models.TextField(null=True, blank=True)
+    image = CloudinaryField("image")
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
