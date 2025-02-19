@@ -91,6 +91,7 @@ class UserDetailsSerializers(serializers.ModelSerializer):
             "date_joined",
             "is_active",
             "residential_address",
+            "profile_pic",
         )
 
     def to_representation(self, instance):
