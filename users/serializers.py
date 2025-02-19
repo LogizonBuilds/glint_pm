@@ -67,9 +67,10 @@ class UserSignupSerializer(ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop("password1")
+        print("Password Register: ", password)
         validated_data.pop("password2")
         validated_data["password"] = password
-        user = User.objects.create(**validated_data)
+        user = User.objects.create_user(**validated_data)
         return user
 
 
@@ -145,20 +146,18 @@ class ChangePasswordUnAuthenticatedSerializer(serializers.Serializer):
         return data
 
 
-class LoginSerializer(serializers.ModelSerializer):
+class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True)
-
-    class Meta:
-        model = User
-        fields = ("email", "password")
 
     def validate(self, data):
         email = data.get("email")
         password = data.get("password")
+        print("Password: ", password)
 
         # get user
         user = User.objects.filter(email__iexact=email).first()
+        print("User: ", user)
         if user and user.check_password(password):
             data["user"] = user
             return data
@@ -171,3 +170,35 @@ class UpdateUserSerializer(serializers.Serializer):
     first_name = serializers.CharField(required=False)
     whatsapp_number = serializers.CharField(required=False)
     residential_address = serializers.CharField(required=False)
+
+
+class ChangePasswordAuthenticatedSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_password = serializers.CharField(required=True)
+
+    def validate_new_password(self, new_password):
+        """Validate user's inputed password on change password"""
+        # Regex pattern to match at least one digit, one uppercase letter,
+        # one lowercase letter, one special character, and length >= 8
+        regex_pattern = (
+            r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+        )
+        if not re.match(regex_pattern, new_password):
+            raise serializers.ValidationError(
+                "Password must contain at least one digit, "
+                "one uppercase letter, one lowercase letter, "
+                "one special character, and length >= 8"
+            )
+        return new_password
+
+    def validate(self, data):
+        new_password = data.get("new_password")
+        confirm_password = data.get("confirm_password")
+
+        if new_password != confirm_password:
+            raise ServiceException(
+                message="The two passwords do not match", status_code=400
+            )
+
+        return data

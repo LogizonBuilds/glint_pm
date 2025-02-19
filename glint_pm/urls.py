@@ -17,7 +17,12 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from users.views import RootAPIView, UploadProfileImageAPIView, UpdateClientProfile
+from users.views import (
+    RootAPIView,
+    UploadProfileImageAPIView,
+    UpdateClientProfile,
+    ChangePasswordAPIView,
+)
 from django.conf import settings
 from django.conf.urls.static import static
 from django_editorjs_fields import urls as editorjs_urls
@@ -29,6 +34,11 @@ urlpatterns = [
         "users/profile/upload",
         UploadProfileImageAPIView.as_view(),
         name="upload-profile-pic",
+    ),
+    path(
+        "users/profile/change-password",
+        ChangePasswordAPIView.as_view(),
+        name="change-password",
     ),
     path("users/profile/update", UpdateClientProfile.as_view(), name="update-profile"),
     path("auth/", include("users.urls")),
