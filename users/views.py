@@ -20,6 +20,7 @@ from datetime import datetime
 from rest_framework.permissions import IsAuthenticated
 from typing import Union
 from rest_framework.parsers import MultiPartParser, FormParser
+from .serializers import ChangePasswordAuthenticatedSerializer
 
 # Create your views here.
 
@@ -321,4 +322,29 @@ class UpdateClientProfile(APIView):
         user.save()
         return service_response(
             status="success", message="Profile Updated Successfully", status_code=200
+        )
+
+class ChangePasswordAPIView(APIView):
+    """Changes User Password Authenticated"""
+
+    permission_classes = [IsAuthenticated]
+
+    @exception_advice(model_object=ErrorLog)
+    def post(self, request, *args, **kwargs):
+        """Post Handler that handles changing of password - Authenticated"""
+
+        serializer = ChangePasswordAuthenticatedSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        old_password = serializer.validated_data.get("old_password")
+        password1 = serializer.validated_data.get("new_password")
+
+        if not user.check_password(old_password):
+            return service_response(
+                status="error", message="Old Password is incorrect", status_code=400
+            )
+        user.set_password(password1)
+        user.save()
+        return service_response(
+            status="success", message="Password Changed Successfully", status_code=200
         )
