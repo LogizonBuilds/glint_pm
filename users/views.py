@@ -19,6 +19,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from datetime import datetime
 from rest_framework.permissions import IsAuthenticated
 from typing import Union
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # Create your views here.
 
@@ -277,6 +278,8 @@ class LoginAPIView(APIView):
 
 class UploadProfileImageAPIView(APIView):
     """API View that handles client profile image upload"""
+
+    parser_classes = (MultiPartParser, FormParser)
 
     permission_classes = [IsAuthenticated]
 
