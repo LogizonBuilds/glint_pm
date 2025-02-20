@@ -11,6 +11,7 @@ import logging
 import traceback
 from django.db import transaction
 from phonenumber_field.modelfields import PhoneNumberField
+from sparky_utils.decorators import str_meta
 
 
 logger = logging.getLogger(__name__)
@@ -85,3 +86,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.first_name = first_name
         self.last_name = last_name
         self.save()
+
+
+@str_meta
+class Setting(models.Model):
+    name = models.CharField(max_length=200)
+    whatsapp_link = models.URLField(null=True, blank=True)
+    youtube_link = models.URLField(null=True, blank=True)
+    instagram_link = models.URLField(null=True, blank=True)
+    twitter_link = models.URLField(null=True, blank=True)
+    company_email = models.EmailField(null=True, blank=True)
+    company_phone_number = PhoneNumberField(null=True, blank=True)
+    company_address = models.TextField(null=True, blank=True)
+    company_logo = models.URLField(null=True, blank=True)
+    company_name = models.CharField(max_length=200)
+    company_description = models.TextField(null=True, blank=True)
