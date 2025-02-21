@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from sparky_utils.response import service_response
 from sparky_utils.advice import exception_advice
 from .serializers import (
+    SettingsSerializer,
     UserSignupSerializer,
     VerifyOTPSerializer,
     UserDetailsSerializers,
@@ -13,7 +14,7 @@ from .serializers import (
 from devs.models import ErrorLog
 from django.core.cache import cache
 from utils.utils import generate_otp, upload_to_cloudinary
-from .models import User
+from .models import User, Setting
 from .tasks import send_email_verification_task
 from rest_framework_simplejwt.tokens import RefreshToken
 from datetime import datetime
@@ -324,6 +325,7 @@ class UpdateClientProfile(APIView):
             status="success", message="Profile Updated Successfully", status_code=200
         )
 
+
 class ChangePasswordAPIView(APIView):
     """Changes User Password Authenticated"""
 
@@ -347,4 +349,20 @@ class ChangePasswordAPIView(APIView):
         user.save()
         return service_response(
             status="success", message="Password Changed Successfully", status_code=200
+        )
+
+
+class SettingsAPIView(APIView):
+
+    @exception_advice(model_object=ErrorLog)
+    def get(self, request):
+        #  get settings object instance
+        settings = Setting.objects.first()
+        # serialize the settings instance
+        serializer = SettingsSerializer(instance=settings)
+        return service_response(
+            status="success",
+            data=serializer.data,
+            message="Settings Fetched Successfully",
+            status_code=200,
         )
