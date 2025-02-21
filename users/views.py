@@ -213,7 +213,7 @@ class PasswordResetView(APIView):
         )
 
 
-class ChangePasswordAPIView(APIView):
+class ChangePasswordAPIViewNOAuth(APIView):
     """Changes User password with reset token"""
 
     @exception_advice(model_object=ErrorLog)

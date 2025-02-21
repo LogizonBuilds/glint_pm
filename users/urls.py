@@ -6,7 +6,7 @@ from .views import (
     SocialAuth,
     UserDetailsAPIView,
     PasswordResetView,
-    ChangePasswordAPIView,
+    ChangePasswordAPIViewNOAuth,
     LoginAPIView,
 )
 
@@ -20,7 +20,7 @@ urlpatterns = [
     path("reset-password", PasswordResetView.as_view(), name="reset-password"),
     path(
         "reset-password/change",
-        ChangePasswordAPIView.as_view(),
+        ChangePasswordAPIViewNOAuth.as_view(),
         name="reset-password-change",
     ),
     path("login", LoginAPIView.as_view(), name="login"),
