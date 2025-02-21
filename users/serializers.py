@@ -4,7 +4,7 @@ from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from sparky_utils.exceptions import ServiceException
 
-from .models import User
+from .models import User, Setting
 
 
 class UserSignupSerializer(ModelSerializer):
@@ -202,3 +202,10 @@ class ChangePasswordAuthenticatedSerializer(serializers.Serializer):
             )
 
         return data
+
+
+class SettingsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Setting
+        fields = "__all__"

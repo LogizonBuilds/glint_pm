@@ -22,6 +22,7 @@ from users.views import (
     UploadProfileImageAPIView,
     UpdateClientProfile,
     ChangePasswordAPIView,
+    SettingsAPIView,
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -35,6 +36,7 @@ urlpatterns = [
         UploadProfileImageAPIView.as_view(),
         name="upload-profile-pic",
     ),
+    path("settings", SettingsAPIView.as_view(), name="settings"),
     path(
         "users/profile/change-password",
         ChangePasswordAPIView.as_view(),
