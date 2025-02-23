@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Service
+from .models import Service, WhatWeDo
 
 
 class ServiceSerializer(serializers.ModelSerializer):
@@ -17,7 +17,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 class WhatWeDoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Service
+        model = WhatWeDo
         fields = ["id", "title", "description", "image"]
         read_only_fields = ["created_at", "updated_at"]
 
