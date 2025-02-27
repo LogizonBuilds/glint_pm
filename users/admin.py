@@ -15,6 +15,7 @@ class TransactionAdmin(admin.ModelAdmin):
         "id",
         "user",
         "amount",
+        "transaction_reference",
         "transaction_date",
         "service_name",
         "transaction_status",

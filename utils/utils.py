@@ -90,6 +90,7 @@ class FlutterSDK:
             },
             "payment_options": "card, ussd, opay, banktransfer, account, googlepay",
             "customizations": {
+                "title": "GlintPM",
                 "description": "Payment for services",
                 "logo": "https://assets.piedpiper.com/logo.png",
             },

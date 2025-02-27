@@ -29,6 +29,7 @@ from typing import Union
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import ChangePasswordAuthenticatedSerializer
 from constants.constants import TransactionStatus
+import json
 
 # Create your views here.
 
@@ -430,19 +431,18 @@ class FlutterWebhookAPIView(APIView):
     @exception_advice(model_object=ErrorLog)
     def post(self, request, *args, **kwargs):
         # get the secret hash
-        secret_hash = get_env("FLUTTER_WEBHOOK_SECRET")
+        secret_hash = get_env("FLUTTER_WEBHOOK_SECRET", "somekey")
         # get the signature
         signature = request.headers.get("verif-hash")
         if not signature or signature != secret_hash:
             return service_response(
                 status="error", message="Invalid Signature", status_code=401
             )
-        payload = request.body
-        print("This is the payload: ", payload)
-        payload_data = payload.get("data")
-        tx_ref = payload_data.get("tx_ref")
+        payload_byte = request.body
+        payload = json.loads(payload_byte.decode("utf-8"))
+        tx_ref = payload.get("txRef")
         transaction = Transaction.objects.get(transaction_reference=tx_ref)
-        transaction_status = payload_data.get("status")
+        transaction_status = payload.get("status")
         match transaction_status:
             case "successful":
                 transaction.transaction_status = TransactionStatus.SUCCESS.value

@@ -24,6 +24,7 @@ from users.views import (
     ChangePasswordAPIView,
     SettingsAPIView,
     ServicePaymentAPIView,
+    FlutterWebhookAPIView,
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -43,6 +44,7 @@ urlpatterns = [
         ChangePasswordAPIView.as_view(),
         name="change-password",
     ),
+    path("payments/webhook", FlutterWebhookAPIView.as_view(), name="webhook"),
     path("users/payments", ServicePaymentAPIView.as_view(), name="service-payment"),
     path("users/profile/update", UpdateClientProfile.as_view(), name="update-profile"),
     path("auth/", include("users.urls")),
