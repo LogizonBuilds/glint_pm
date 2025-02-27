@@ -17,3 +17,9 @@ class Severity(EnumBase):
 class ServiceType(EnumBase):
     TECH = "TECH"
     PROJECT_MANAGEMENT = "PROJECT_MANAGEMENT"
+
+
+class TransactionStatus(EnumBase):
+    PENDING = "PENDING"
+    SUCCESS = "SUCCESS"
+    FAILED = "FAILED"

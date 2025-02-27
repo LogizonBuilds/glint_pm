@@ -5,6 +5,8 @@ import cloudinary.uploader
 import uuid
 import random
 import string
+from dataclasses import dataclass
+import requests
 
 load_dotenv()
 
@@ -56,3 +58,52 @@ def generate_ref() -> str:
     """generate unique reference code"""
     code = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
     return code.upper()
+
+
+@dataclass
+class FlutterSDK:
+    """Flutter SDK class for making payments"""
+
+    amount: str
+    customer_email: str
+    customer_name: str
+    customer_phone: str
+    tx_ref: str
+    secret_key: str = get_env("FLUTTER_SECRET_KEY", "")
+    public_key: str = get_env("FLUTTER_PUBLIC_KEY", "")
+    base_url: str = get_env("FLUTTER_BASE_URL", "")
+    redirect_url: str = get_env("FLUTTER_REDIRECT_URL", "")
+    currency: str = "NGN"
+
+    def generate_checkout_url(self):
+        """Generate checkout url for flutterwave"""
+        endpoint: str = f"{self.base_url}/payments"
+        body = {
+            "tx_ref": self.tx_ref,
+            "amount": self.amount,
+            "currency": self.currency,
+            "redirect_url": self.redirect_url,
+            "customer": {
+                "email": self.customer_email,
+                "phonenumber": str(self.customer_phone),
+                "name": self.customer_name,
+            },
+            "payment_options": "card, ussd, opay, banktransfer, account, googlepay",
+            "customizations": {
+                "title": "GlintPM",
+                "description": "Payment for services",
+                "logo": "https://assets.piedpiper.com/logo.png",
+            },
+        }
+        headers = {
+            "Authorization": f"Bearer {self.secret_key}",
+            "Content-Type": "application/json",
+        }
+
+        # send the request
+        response = requests.post(endpoint, json=body, headers=headers)
+        resp = response.json()
+        if response.status_code == 200:
+            return resp["data"]["link"]
+        else:
+            raise Exception(resp.get("message", "An error occurred"))
