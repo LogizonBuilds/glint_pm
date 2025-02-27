@@ -72,7 +72,7 @@ class FlutterSDK:
     secret_key: str = get_env("FLUTTER_SECRET_KEY", "")
     public_key: str = get_env("FLUTTER_PUBLIC_KEY", "")
     base_url: str = get_env("FLUTTER_BASE_URL", "")
-    redirect_url: str = get_env("REDIRECT_URL", "")
+    redirect_url: str = get_env("FLUTTER_REDIRECT_URL", "")
     currency: str = "NGN"
 
     def generate_checkout_url(self):
