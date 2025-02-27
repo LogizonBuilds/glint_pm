@@ -12,6 +12,7 @@ import traceback
 from django.db import transaction
 from phonenumber_field.modelfields import PhoneNumberField
 from sparky_utils.decorators import str_meta
+from constants.constants import TransactionStatus
 
 
 logger = logging.getLogger(__name__)
@@ -101,3 +102,29 @@ class Setting(models.Model):
     company_logo = models.URLField(null=True, blank=True)
     company_name = models.CharField(max_length=200)
     company_description = models.TextField(null=True, blank=True)
+
+
+class Transaction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.CharField(max_length=200)
+    service_name = models.CharField(max_length=200, null=True, blank=True)
+    transaction_date = models.DateTimeField(auto_now_add=True)
+    transaction_status = models.CharField(
+        max_length=200,
+        choices=TransactionStatus.choices(),
+        default=TransactionStatus.PENDING.value,
+    )
+    transaction_description = models.TextField(null=True, blank=True)
+    transaction_reference = models.CharField(max_length=200, unique=True)
+    transaction_currency = models.CharField(max_length=200, default="NGN")
+
+    class Meta:
+        db_table = "transactions"
+        verbose_name = _("Transaction")
+        verbose_name_plural = _("Transactions")
+        indexes = [
+            models.Index(
+                fields=["transaction_reference"], name="transaction_reference_idx"
+            ),
+        ]
+        ordering = ["-transaction_date"]
