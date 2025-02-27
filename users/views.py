@@ -13,8 +13,14 @@ from .serializers import (
 )
 from devs.models import ErrorLog
 from django.core.cache import cache
-from utils.utils import generate_otp, generate_ref, upload_to_cloudinary, FlutterSDK
-from .models import User, Setting
+from utils.utils import (
+    generate_otp,
+    generate_ref,
+    upload_to_cloudinary,
+    FlutterSDK,
+    get_env,
+)
+from .models import User, Setting, Transaction
 from .tasks import send_email_verification_task
 from rest_framework_simplejwt.tokens import RefreshToken
 from datetime import datetime
@@ -22,6 +28,7 @@ from rest_framework.permissions import IsAuthenticated
 from typing import Union
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import ChangePasswordAuthenticatedSerializer
+from constants.constants import TransactionStatus
 
 # Create your views here.
 
@@ -378,6 +385,7 @@ class ServicePaymentAPIView(APIView):
         """Post Handler"""
         # get amount from request
         amount = request.data.get("amount")
+        service_name = request.data.get("service_name")
         if not amount:
             return service_response(
                 status="error", message="Amount is required", status_code=400
@@ -386,6 +394,7 @@ class ServicePaymentAPIView(APIView):
         # currency = request.data.get("currency", "NGN")
         user: User = request.user
         # get user details
+        tx_ref = generate_ref()
         customer_email = user.email
         customer_name = user.full_name
         customer_phone = user.whatsapp_number
@@ -395,12 +404,55 @@ class ServicePaymentAPIView(APIView):
             customer_email=customer_email,
             customer_name=customer_name,
             customer_phone=customer_phone,
+            tx_ref=tx_ref,
         )
         # generate checkout url
         checkout_url = flutter.generate_checkout_url()
+        # save transaction
+        _ = Transaction.create_transaction(
+            user=user,
+            amount=amount,
+            service_name=service_name,
+            description="Payment for service",
+            tx_ref=tx_ref,
+        )
         return service_response(
             status="success",
             message="Checkout URL Generated Successfully",
             data={"checkout_url": checkout_url},
+            status_code=200,
+        )
+
+
+class FlutterWebhookAPIView(APIView):
+    """Flutter Webhook API View"""
+
+    @exception_advice(model_object=ErrorLog)
+    def post(self, request, *args, **kwargs):
+        # get the secret hash
+        secret_hash = get_env("FLUTTER_WEBHOOK_SECRET")
+        # get the signature
+        signature = request.headers.get("verif-hash")
+        if not signature or signature != secret_hash:
+            return service_response(
+                status="error", message="Invalid Signature", status_code=401
+            )
+        payload = request.body
+        print("This is the payload: ", payload)
+        payload_data = payload.get("data")
+        tx_ref = payload_data.get("tx_ref")
+        transaction = Transaction.objects.get(transaction_reference=tx_ref)
+        transaction_status = payload_data.get("status")
+        match transaction_status:
+            case "successful":
+                transaction.transaction_status = TransactionStatus.SUCCESS.value
+            case "failed":
+                transaction.transaction_status = TransactionStatus.FAILED.value
+            case _:
+                pass
+        transaction.save()
+        return service_response(
+            status="success",
+            message="Transaction Updated Successfully",
             status_code=200,
         )

@@ -13,6 +13,8 @@ from django.db import transaction
 from phonenumber_field.modelfields import PhoneNumberField
 from sparky_utils.decorators import str_meta
 from constants.constants import TransactionStatus
+from django.utils import timezone
+from django.db import transaction
 
 
 logger = logging.getLogger(__name__)
@@ -128,3 +130,22 @@ class Transaction(models.Model):
             ),
         ]
         ordering = ["-transaction_date"]
+
+    @classmethod
+    def create_transaction(
+        cls, user: User, amount: str, service_name: str, description: str, tx_ref
+    ) -> "Transaction":
+        try:
+            with transaction.atomic():
+                transaction_instance = cls.objects.create(
+                    user=user,
+                    amount=amount,
+                    service_name=service_name,
+                    transaction_description=description,
+                    transaction_reference=tx_ref,
+                )
+                return transaction_instance
+        except Exception as e:
+            logger.error(f"Error creating transaction: {e}")
+            logger.error(traceback.format_exc())
+            raise e

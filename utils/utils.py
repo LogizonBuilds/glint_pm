@@ -68,12 +68,12 @@ class FlutterSDK:
     customer_email: str
     customer_name: str
     customer_phone: str
+    tx_ref: str
     secret_key: str = get_env("FLUTTER_SECRET_KEY", "")
     public_key: str = get_env("FLUTTER_PUBLIC_KEY", "")
     base_url: str = get_env("FLUTTER_BASE_URL", "")
     redirect_url: str = get_env("REDIRECT_URL", "")
     currency: str = "NGN"
-    tx_ref: str = generate_ref()
 
     def generate_checkout_url(self):
         """Generate checkout url for flutterwave"""
