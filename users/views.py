@@ -13,7 +13,7 @@ from .serializers import (
 )
 from devs.models import ErrorLog
 from django.core.cache import cache
-from utils.utils import generate_otp, upload_to_cloudinary
+from utils.utils import generate_otp, generate_ref, upload_to_cloudinary, FlutterSDK
 from .models import User, Setting
 from .tasks import send_email_verification_task
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -364,5 +364,43 @@ class SettingsAPIView(APIView):
             status="success",
             data=serializer.data,
             message="Settings Fetched Successfully",
+            status_code=200,
+        )
+
+
+class ServicePaymentAPIView(APIView):
+    """Service Payment API View"""
+
+    permission_classes = [IsAuthenticated]
+
+    @exception_advice(model_object=ErrorLog)
+    def post(self, request, *args, **kwargs):
+        """Post Handler"""
+        # get amount from request
+        amount = request.data.get("amount")
+        if not amount:
+            return service_response(
+                status="error", message="Amount is required", status_code=400
+            )
+        # get currency
+        # currency = request.data.get("currency", "NGN")
+        user: User = request.user
+        # get user details
+        customer_email = user.email
+        customer_name = user.full_name
+        customer_phone = user.whatsapp_number
+        # create flutter sdk instance
+        flutter = FlutterSDK(
+            amount=amount,
+            customer_email=customer_email,
+            customer_name=customer_name,
+            customer_phone=customer_phone,
+        )
+        # generate checkout url
+        checkout_url = flutter.generate_checkout_url()
+        return service_response(
+            status="success",
+            message="Checkout URL Generated Successfully",
+            data={"checkout_url": checkout_url},
             status_code=200,
         )
