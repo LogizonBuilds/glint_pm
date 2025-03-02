@@ -4,6 +4,7 @@ from sparky_utils.response import service_response
 from sparky_utils.advice import exception_advice
 from .serializers import (
     SettingsSerializer,
+    TransactionSerializer,
     UserSignupSerializer,
     VerifyOTPSerializer,
     UserDetailsSerializers,
@@ -454,5 +455,26 @@ class FlutterWebhookAPIView(APIView):
         return service_response(
             status="success",
             message="Transaction Updated Successfully",
+            status_code=200,
+        )
+
+
+class GetAllTransactionsAPIView(APIView):
+    """All transactions view"""
+
+    permission_classes = [IsAuthenticated]
+
+    @exception_advice(model_object=ErrorLog)
+    def get(self, request, *args, **kwargs):
+        """Post Handler to get all transactions"""
+        user = request.user
+        transactions = Transaction.objects.filter(user=user)
+        # serialize the transactions
+        serializer = TransactionSerializer(instance=transactions, many=True)
+
+        return service_response(
+            status="success",
+            message="Transactions fetch successfully",
+            data=serializer.data,
             status_code=200,
         )

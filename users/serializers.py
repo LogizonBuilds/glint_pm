@@ -4,7 +4,7 @@ from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from sparky_utils.exceptions import ServiceException
 
-from .models import User, Setting
+from .models import User, Setting, Transaction
 
 
 class UserSignupSerializer(ModelSerializer):
@@ -153,11 +153,9 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, data):
         email = data.get("email")
         password = data.get("password")
-        print("Password: ", password)
 
         # get user
         user = User.objects.filter(email__iexact=email).first()
-        print("User: ", user)
         if user and user.check_password(password):
             data["user"] = user
             return data
@@ -209,3 +207,23 @@ class SettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Setting
         fields = "__all__"
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = (
+            "amount",
+            "service_name",
+            "transaction_date",
+            "transaction_status",
+            "transaction_description",
+            "transaction_reference",
+            "transaction_currency",
+        )
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        username = instance.user.full_name
+        data["username"] = username
+        return data

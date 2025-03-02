@@ -12,3 +12,16 @@ class Portfolio(models.Model):
     image = CloudinaryField("image")
     project_link = models.URLField(null=True, blank=True)
     github_link = models.URLField(null=True, blank=True)
+
+
+class AboutUs(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(null=True, blank=True)
+    image = CloudinaryField("image")
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name_plural = "About Us"
+        verbose_name = "About Us"

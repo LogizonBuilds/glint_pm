@@ -25,7 +25,9 @@ from users.views import (
     SettingsAPIView,
     ServicePaymentAPIView,
     FlutterWebhookAPIView,
+    GetAllTransactionsAPIView,
 )
+from portfolio.views import AboutUsAPIView
 from django.conf import settings
 from django.conf.urls.static import static
 from django_editorjs_fields import urls as editorjs_urls
@@ -38,11 +40,17 @@ urlpatterns = [
         UploadProfileImageAPIView.as_view(),
         name="upload-profile-pic",
     ),
+    path("about-us/", AboutUsAPIView.as_view(), name="about-us"),
     path("settings", SettingsAPIView.as_view(), name="settings"),
     path(
         "users/profile/change-password",
         ChangePasswordAPIView.as_view(),
         name="change-password",
+    ),
+    path(
+        "users/transactions",
+        GetAllTransactionsAPIView.as_view(),
+        name="all-transactions",
     ),
     path("payments/webhook", FlutterWebhookAPIView.as_view(), name="webhook"),
     path("users/payments", ServicePaymentAPIView.as_view(), name="service-payment"),
