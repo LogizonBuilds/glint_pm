@@ -16,7 +16,7 @@ def sendmail(
     message: str,
     user_email: str,
     username: str = "Participants",
-    from_email: str = "truebone002@gmail.com",
+    from_email: str = "hello@glintpm.com",
     other_email=None,
     template_name="verification_email.html",
 ) -> None:
@@ -58,7 +58,7 @@ def sendmail(
 
     msg.content_subtype = "html"
 
-    msg.extra_headers["Reply-To"] = "truebone002@gmail.com"
+    msg.extra_headers["Reply-To"] = "hello@glintpm.com"
     # msg.send()
 
     try:
