@@ -104,6 +104,10 @@ class Setting(models.Model):
     company_logo = models.URLField(null=True, blank=True)
     company_name = models.CharField(max_length=200)
     company_description = models.TextField(null=True, blank=True)
+    total_clients = models.IntegerField(default=0)
+    total_payments_processed = models.IntegerField(default=0)
+    total_projects_completed = models.IntegerField(default=0)
+    total_partners = models.IntegerField(default=0)
 
 
 class Transaction(models.Model):
