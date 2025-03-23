@@ -434,6 +434,7 @@ class FlutterWebhookAPIView(APIView):
         # get the secret hash
         secret_hash = get_env("FLUTTER_WEBHOOK_SECRET", "somekey")
         # get the signature
+        print("Let's see the secret hash: ", secret_hash)
         signature = request.headers.get("verif-hash")
         if not signature or signature != secret_hash:
             return service_response(
@@ -441,6 +442,7 @@ class FlutterWebhookAPIView(APIView):
             )
         payload_byte = request.body
         payload = json.loads(payload_byte.decode("utf-8"))
+        print("This is the payload: ", payload)
         tx_ref = payload.get("txRef")
         transaction = Transaction.objects.get(transaction_reference=tx_ref)
         transaction_status = payload.get("status")
