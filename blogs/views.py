@@ -32,10 +32,17 @@ class BlogView(APIView):
 
     @exception_advice(model_object=ErrorLog)
     def get(self, request):
-        blogs = Post.objects.all()
-        serializer = PostSerializers(blogs, many=True)
-        print(f"Hit Count: {count}")
-        return Response(serializer.data, status=200)
+        latest = request.GET.get("query", None)
+        if latest:
+            blogs = Post.objects.all().order_by("-date_created")[:3]
+            serializer = PostSerializers(blogs, many=True)
+            print(f"Hit Count: {count}")
+            return Response(serializer.data, status=200)
+        else:
+            blogs = Post.objects.all()
+            serializer = PostSerializers(blogs, many=True)
+            print(f"Hit Count: {count}")
+            return Response(serializer.data, status=200)
 
 
 class RetrieveABlogPost(APIView):
