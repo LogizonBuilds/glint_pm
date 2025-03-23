@@ -324,15 +324,23 @@ class UpdateClientProfile(APIView):
         _id = request.user.id
         user = User.objects.get(id=_id)
         serializer = UpdateUserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        update_data = serializer.validated_data
-        print("This is the update data: ", update_data)
-        for k, v in update_data.items():
-            setattr(user, k, v)
-        user.save()
-        return service_response(
-            status="success", message="Profile Updated Successfully", status_code=200
-        )
+        if serializer.is_valid():
+            update_data = serializer.validated_data
+            print("This is the update data: ", update_data)
+            for k, v in update_data.items():
+                setattr(user, k, v)
+            user.save()
+            return service_response(
+                status="success",
+                message="Profile Updated Successfully",
+                status_code=200,
+            )
+        else:
+            return service_response(
+                status="error",
+                message=serializer.errors,
+                status_code=400,
+            )
 
 
 class ChangePasswordAPIView(APIView):
@@ -443,7 +451,7 @@ class FlutterWebhookAPIView(APIView):
         payload_byte = request.body
         payload = json.loads(payload_byte.decode("utf-8"))
         print("This is the payload: ", payload)
-        tx_ref = payload.get("txRef")
+        tx_ref = payload.get("tx_ref")
         transaction = Transaction.objects.get(transaction_reference=tx_ref)
         transaction_status = payload.get("status")
         match transaction_status:
