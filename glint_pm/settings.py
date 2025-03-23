@@ -193,7 +193,12 @@ CELERY_RESULT_BACKEND = "django-db"
 CELERY_RESULTS_EXTENDED = True
 
 
-CELERY_BEAT_SCHEDULE = {}
+CELERY_BEAT_SCHEDULE = {
+    "verify_payment_status_task": {
+        "task": "users.tasks.verify_payment_status_task",
+        "schedule": timedelta(minutes=1),
+    }
+}
 
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": get_env("CLOUDINARY_CLOUD_NAME", "your-cloud-name"),
