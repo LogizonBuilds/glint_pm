@@ -164,10 +164,16 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UpdateUserSerializer(serializers.Serializer):
-    last_name = serializers.CharField(required=False, allow_blank=True)
-    first_name = serializers.CharField(required=False, allow_blank=True)
-    whatsapp_number = serializers.CharField(required=False, allow_blank=True)
-    residential_address = serializers.CharField(required=False, allow_blank=True)
+    last_name = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    first_name = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
+    whatsapp_number = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
+    residential_address = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
 
 
 class ChangePasswordAuthenticatedSerializer(serializers.Serializer):
