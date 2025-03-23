@@ -36,12 +36,10 @@ class BlogView(APIView):
         if latest:
             blogs = Post.objects.all().order_by("-date_created")[:3]
             serializer = PostSerializers(blogs, many=True)
-            print(f"Hit Count: {count}")
             return Response(serializer.data, status=200)
         else:
-            blogs = Post.objects.all()
+            blogs = Post.objects.all().order_by("-date_created")
             serializer = PostSerializers(blogs, many=True)
-            print(f"Hit Count: {count}")
             return Response(serializer.data, status=200)
 
 
