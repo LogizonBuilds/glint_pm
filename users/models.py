@@ -153,3 +153,5 @@ class Transaction(models.Model):
             logger.error(f"Error creating transaction: {e}")
             logger.error(traceback.format_exc())
             raise e
+
+
