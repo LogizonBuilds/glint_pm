@@ -64,16 +64,32 @@ def generate_ref() -> str:
 class FlutterSDK:
     """Flutter SDK class for making payments"""
 
-    amount: str
-    customer_email: str
-    customer_name: str
-    customer_phone: str
     tx_ref: str
+    amount: str = None
+    customer_email: str = None
+    customer_name: str = None
+    customer_phone: str = None
     secret_key: str = get_env("FLUTTER_SECRET_KEY", "")
     public_key: str = get_env("FLUTTER_PUBLIC_KEY", "")
     base_url: str = get_env("FLUTTER_BASE_URL", "")
     redirect_url: str = get_env("FLUTTER_REDIRECT_URL", "")
     currency: str = "NGN"
+
+    def get_transaction_status(self):
+        """Verify transaction status"""
+        endpoint: str = (
+            f"{self.base_url}/transactions/verify_by_reference?tx_ref={self.tx_ref}"
+        )
+        headers = {
+            "Authorization": f"Bearer {self.secret_key}",
+            "Content-Type": "application/json",
+        }
+        response = requests.get(endpoint, headers=headers)
+        resp = response.json()
+        if response.status_code == 200:
+            return resp["data"]["status"]
+        else:
+            raise Exception(resp.get("message", "An error occurred"))
 
     def generate_checkout_url(self):
         """Generate checkout url for flutterwave"""

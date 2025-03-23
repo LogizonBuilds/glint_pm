@@ -444,6 +444,7 @@ class FlutterWebhookAPIView(APIView):
         # get the signature
         print("Let's see the secret hash: ", secret_hash)
         signature = request.headers.get("verif-hash")
+        print("What is the signature: ", signature)
         if not signature or signature != secret_hash:
             return service_response(
                 status="error", message="Invalid Signature", status_code=401
