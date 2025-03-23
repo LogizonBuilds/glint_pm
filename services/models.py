@@ -17,6 +17,7 @@ class Service(models.Model):
     description = models.TextField(null=True, blank=True)
     image = CloudinaryField("image")
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    other_link = models.URLField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
 
